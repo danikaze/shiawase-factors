@@ -1,0 +1,42 @@
+body {
+  background: #f9f9f9;
+}
+
+h1 {
+  display: inline;
+  padding: 0 6em 0 1em;
+  border-bottom: 1px solid #ff9900;
+}
+
+dl {
+  margin-top: 2em;
+}
+
+dl dt {
+  font-weight: bold;
+}
+
+dl em {
+  font-weight: normal;
+  display: block;
+  color: #0035ca;
+  padding-left: 1em;
+}
+
+dl dd {
+  margin-left: 1em;
+  margin-bottom: 1em;
+}
+
+#status {
+  display: none;
+}
+
+#status.show {
+  display: inline;
+}
+
+#status.banish {
+  opacity: 0;
+  transition: opacity 2s;
+}

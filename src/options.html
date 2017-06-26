@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Shiawase Factors :: Settings</title>
+    <link href="options.css" type="text/css" rel="stylesheet" />
+  </head>
+  <body>
+    <h1>Shiawase Factors settings</h1>
+    <dl>
+      <dt>
+        URL filter (regExp)
+        <em>The script will be only active in the tabs with a matching URL</em>
+      </dt>
+      <dd><input type="text" id="url-filter"></dd>
+
+      <dt>
+        Delay for going to the next page (ms.)
+        <em>Time to wait before moving to the next slide</em>
+      </dt>
+      <dd><input type="text" id="next-page-delay"></dd>
+
+      <dt>
+        Delay for code injection (ms.)
+        <em>Time to wait before injecting the code (so the page has time enough to load all the frames)</em>
+      </dt>
+      <dd><input type="text" id="execution-delay"></dd>
+    </dl>
+
+  <button id="save">Save</button>
+  <div id="status">Options saved</div>
+
+  <script src="utils.js"></script>
+  <script src="options.js"></script>
+  </body>
+</html>
