@@ -1,5 +1,6 @@
 const activeTabs = [];
 const cachedXmls = {};
+const requestedXmls = [];
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   getOptions().then((options) => {
@@ -27,8 +28,9 @@ function sniffRequests(tabId) {
       runAt: 'document_end',
       allFrames: true,
     }, () => {
+      const escapedXml = JSON.stringify(xml).replace(/'/g, "\\'");
       chrome.tabs.executeScript(tabId, {
-        code: `typeof shiawaseSetData !== 'undefined' && shiawaseSetData('${JSON.stringify(xml)}')`,
+        code: `typeof shiawaseSetData !== 'undefined' && shiawaseSetData('${escapedXml}')`,
         runAt: 'document_end',
         allFrames: true,
       });
@@ -36,16 +38,18 @@ function sniffRequests(tabId) {
   }
 
   function requestListener(r) {
-    if (!r.url || r.url.indexOf('imsmanifest.xml') !== -1) {
+    const url = r.url;
+    if (!url || url.indexOf('imsmanifest.xml') !== -1) {
       return;
     }
 
-    const cachedXml = cachedXmls[r.url];
+    const cachedXml = cachedXmls[url];
     if (cachedXml) {
       processXml(cachedXml);
-    } else {
-      getXmlAsJson(r.url).then((xml) => {
-        cachedXmls[r.url] = xml;
+    } else if (requestedXmls.indexOf(url) === -1) {
+      requestedXmls.push(url);
+      getXmlAsJson(url).then((xml) => {
+        cachedXmls[url] = xml;
         processXml(xml);
       });
     }
