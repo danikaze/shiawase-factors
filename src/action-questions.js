@@ -23,25 +23,7 @@
     top: '4px',
   };
 
-  function waitFor(condition, timeout) {
-    const promise = new Promise((resolve) => {
-      evalCondition(resolve);
-    });
-
-    timeout = timeout || 1000;
-
-    function evalCondition(resolve) {
-      if (condition()) {
-        resolve();
-      } else {
-        setTimeout(evalCondition, timeout, resolve);
-      }
-    }
-
-    return promise;
-  }
-
-  function shiawaseSetData(data) {
+  function shiawaseSetData(data, options) {
     if (injectHintButton()) {
       xml = JSON.parse(data);
     }
@@ -65,7 +47,7 @@
   function getAnswers(qElem) {
     const questions = xml.assessment.questions.question;
     const text = qElem.innerHTML;
-    const question = questions.filter((elem) => elem._question === text);
+    const question = questions.filter((elem) => text.indexOf(elem._question) === 0);
 
     if (!question.length) {
       return [];

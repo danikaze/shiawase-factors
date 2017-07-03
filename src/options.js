@@ -1,3 +1,5 @@
+/* global getOptions */
+
 // Saves options to chrome.storage
 function saveOptions() {
   const urlFilter = document.getElementById('url-filter').value;

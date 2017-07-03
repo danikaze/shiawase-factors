@@ -1,3 +1,5 @@
+/* global getOptions, getXmlAsJson */
+
 const activeTabs = [];
 const cachedXmls = {};
 const requestedXmls = [];
@@ -23,21 +25,23 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 function sniffRequests() {
   function processXml(tabId, xml) {
-    console.log('xml');
-    setTimeout(() => {
-      chrome.tabs.executeScript(tabId, {
-        file: 'src/action-questions.js',
-        runAt: 'document_end',
-        allFrames: true,
-      }, () => {
-        const escapedXml = JSON.stringify(xml).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    getOptions().then((options) => {
+      setTimeout(() => {
         chrome.tabs.executeScript(tabId, {
-          code: `typeof shiawaseSetData !== 'undefined' && shiawaseSetData('${escapedXml}')`,
+          file: 'src/action-questions.js',
           runAt: 'document_end',
           allFrames: true,
+        }, () => {
+          const escapedXml = JSON.stringify(xml).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+          const optionsJson = JSON.stringify(options);
+          chrome.tabs.executeScript(tabId, {
+            code: `typeof shiawaseSetData !== 'undefined' && shiawaseSetData('${escapedXml}', '${optionsJson}');`,
+            runAt: 'document_end',
+            allFrames: true,
+          });
         });
-      });
-    }, 5000);
+      }, options.executionDelay);
+    });
   }
 
   function requestListener(r) {
