@@ -21,20 +21,23 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   });
 });
 
-function sniffRequests(tabId) {
-  function processXml(xml) {
-    chrome.tabs.executeScript(tabId, {
-      file: 'src/action-questions.js',
-      runAt: 'document_end',
-      allFrames: true,
-    }, () => {
-      const escapedXml = JSON.stringify(xml).replace(/'/g, "\\'");
+function sniffRequests() {
+  function processXml(tabId, xml) {
+    console.log('xml');
+    setTimeout(() => {
       chrome.tabs.executeScript(tabId, {
-        code: `typeof shiawaseSetData !== 'undefined' && shiawaseSetData('${escapedXml}')`,
+        file: 'src/action-questions.js',
         runAt: 'document_end',
         allFrames: true,
+      }, () => {
+        const escapedXml = JSON.stringify(xml).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        chrome.tabs.executeScript(tabId, {
+          code: `typeof shiawaseSetData !== 'undefined' && shiawaseSetData('${escapedXml}')`,
+          runAt: 'document_end',
+          allFrames: true,
+        });
       });
-    });
+    }, 5000);
   }
 
   function requestListener(r) {
@@ -45,12 +48,12 @@ function sniffRequests(tabId) {
 
     const cachedXml = cachedXmls[url];
     if (cachedXml) {
-      processXml(cachedXml);
+      processXml(r.tabId, cachedXml);
     } else if (requestedXmls.indexOf(url) === -1) {
       requestedXmls.push(url);
       getXmlAsJson(url).then((xml) => {
         cachedXmls[url] = xml;
-        processXml(xml);
+        processXml(r.tabId, xml);
       });
     }
   }
@@ -74,5 +77,5 @@ function start(tabId, options) {
       allFrames: true,
     });
   }, options.executionDelay);
-  sniffRequests(tabId);
+  sniffRequests();
 }

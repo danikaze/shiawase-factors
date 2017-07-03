@@ -42,15 +42,19 @@
   }
 
   function shiawaseSetData(data) {
-    xml = JSON.parse(data);
-    waitFor(() => document.getElementById('btnArea')).then(injectHintButton);
+    if (injectHintButton()) {
+      xml = JSON.parse(data);
+    }
   }
 
   function checkAnswers(answer) {
     for (let i = 0; ; i++) {
-      const ans = document.getElementById(`choice-text${i}`);
+      let ans = document.getElementById(`choice-text${i}`);
       if (!ans) {
-        return;
+        ans = document.getElementById(`imgchoice${i}`);
+        if (!ans) {
+          return;
+        }
       }
       if (ans.classList.contains('checked-color') ^ answer.indexOf(i) !== -1) {
         ans.click();
@@ -92,15 +96,15 @@
   }
 
   function injectHintButton() {
+    const parent = document.getElementById('btnArea');
+    if (!parent) {
+      return false;
+    }
+
     if (document.getElementById(BUTTON_ID)) {
-      return;
+      return false;
     }
     const button = document.createElement('div');
-    const parent = document.getElementById('btnArea');
-
-    if (!parent) {
-      return;
-    }
 
     button.id = BUTTON_ID;
     button.innerHTML = '<span>Hint</span>';
@@ -109,6 +113,8 @@
 
     button.addEventListener('click', hint);
     parent.appendChild(button);
+
+    return true;
   }
 
   window.shiawaseSetData = shiawaseSetData;
