@@ -23,6 +23,12 @@
     top: '4px',
   };
 
+  function decodeHtmlChars(text) {
+    const parser = new DOMParser();
+    const dom = parser.parseFromString(`<!doctype html><body>${text}`, 'text/html');
+    return dom.body.textContent;
+  }
+
   function shiawaseSetData(data, options) {
     if (injectHintButton()) {
       xml = JSON.parse(data);
@@ -46,7 +52,7 @@
 
   function getAnswers(qElem) {
     const questions = xml.assessment.questions.question;
-    const text = qElem.innerHTML;
+    const text = decodeHtmlChars(qElem.innerHTML);
     const question = questions.filter((elem) => text.indexOf(elem._question) === 0);
 
     if (!question.length) {
